@@ -22,6 +22,7 @@ RUN cd /opt && \
     echo y | android update sdk --no-ui -a --filter tools,platform-tools,${ANDROID_API_LEVELS},build-tools-${ANDROID_BUILD_TOOLS_VERSION}
 
 # Install Ruby with dependencies
+RUN apt-get update
 RUN apt-get install -y build-essential
 RUN apt-get install -y libssl-dev
 RUN apt-get install -y git-core
