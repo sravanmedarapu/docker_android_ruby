@@ -2,6 +2,10 @@ FROM ubuntu:16.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+#=============
+# Set WORKDIR
+#=============
+WORKDIR /root
 
 RUN apt-get -qqy update && \
     apt-get -qqy --no-install-recommends install \
