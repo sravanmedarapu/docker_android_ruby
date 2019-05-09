@@ -1,9 +1,10 @@
 FROM webratio/ant
+FROM openjdk:11.0.3-jdk-slim-stretch
 
 # Installs i386 architecture required for running 32 bit Android tools
 RUN dpkg --add-architecture i386 && \
     apt-get update -y && \
-    apt-get install -y libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 && \
+    apt-get install -y libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 wget rubygems && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get autoremove -y && \
     apt-get clean
@@ -50,7 +51,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		liblzma-dev \
 		libmagickcore-dev \
 		libmagickwand-dev \
-		libmysqlclient-dev \
+		default-libmysqlclient-dev \
 		libncurses-dev \
 		libpng-dev \
 		libpq-dev \
@@ -77,8 +78,8 @@ RUN mkdir -p /usr/local/etc \
 
 RUN apt-get update && apt-get install -y curl procps && rm -rf /var/lib/apt/lists/*
 
-ENV RUBY_MAJOR 2.1
-ENV RUBY_VERSION 2.1.5
+ENV RUBY_MAJOR 2.6
+ENV RUBY_VERSION 2.6.3
 
 # some of ruby's build scripts are written in ruby
 # we purge this later to make sure our final image uses what we just built
