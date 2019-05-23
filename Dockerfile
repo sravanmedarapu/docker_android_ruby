@@ -1,5 +1,7 @@
 FROM webratio/ant
 FROM openjdk:11.0.3-jdk-slim-stretch
+#Add adbs directory to $HOME/src
+ADD ./adbs/ $HOME/src/adbs/
 
 # Installs i386 architecture required for running 32 bit Android tools
 RUN dpkg --add-architecture i386 && \
@@ -21,6 +23,11 @@ RUN cd /opt && \
     tar -xzf ${ANDROID_SDK_FILENAME} && \
     rm ${ANDROID_SDK_FILENAME} && \
     echo y | android update sdk --no-ui -a --filter tools,platform-tools,${ANDROID_API_LEVELS},build-tools-${ANDROID_BUILD_TOOLS_VERSION}
+
+# Copying different versions of adb to ${ANDROID_HOME}/platform-tools
+RUN echo "Copying different versions of adb to ${ANDROID_HOME}/platform-tools"
+RUN cp /src/adbs/adb-8aug-usbbus-maxemu-v39 ${ANDROID_HOME}/platform-tools/adb-8aug-usbbus-maxemu-v39
+RUN cp /src/adbs/adb-7aug-usbbus-maxemu-v40 ${ANDROID_HOME}/platform-tools/adb-7aug-usbbus-maxemu-v40
 
 # Install Ruby with dependencies
 RUN apt-get update
@@ -67,7 +74,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		patch \
 		xz-utils \
 		zlib1g-dev \
+		jq \
+		rubygems \ 
+		zip \
+		net-tools \
+		iputils-ping \
 	&& rm -rf /var/lib/apt/lists/*
+
+	RUN apt-get install -y curl \
+  && curl -sL https://deb.nodesource.com/setup_9.x | bash - \
+  && apt-get install -y nodejs \
+  && curl -L https://www.npmjs.com/install.sh | sh
 
 	# skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
@@ -103,7 +120,7 @@ RUN echo 'gem: --no-rdoc --no-ri' >> "$HOME/.gemrc"
 # install things globally, for great justice
 ENV GEM_HOME /usr/local/bundle
 ENV PATH $GEM_HOME/bin:$PATH
-RUN gem install bundler \
+RUN gem install bundler rake \
 	&& bundle config --global path "$GEM_HOME" \
 	&& bundle config --global bin "$GEM_HOME/bin"
 
