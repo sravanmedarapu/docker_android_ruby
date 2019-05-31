@@ -125,7 +125,7 @@ RUN gem install bundler rake \
 	&& bundle config --global bin "$GEM_HOME/bin"
 
 # Disable ipv6 as docker container not able make network calls in ipv4.
-echo precedence ::ffff:0:0/96  100 >> /etc/gai.conf
+RUN echo precedence ::ffff:0:0/96  100 >> /etc/gai.conf
 
 # don't create ".bundle" in all our apps
 ENV BUNDLE_APP_CONFIG $GEM_HOME
